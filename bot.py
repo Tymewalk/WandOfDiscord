@@ -1,8 +1,7 @@
 # WandOfDiscord
 # Created by Tymewalk
 # https://github.com/Tymewalk
-import pexpect, inspect, traceback
-import discord, asyncio, random, time, re, os, pickle, operator, subprocess, vscreen
+import pexpect, inspect, traceback, discord, asyncio, subprocess, vscreen
 
 client = discord.Client()
 
