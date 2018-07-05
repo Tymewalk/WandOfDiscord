@@ -1,6 +1,6 @@
 # VSCREEN
 # Allows you to make a virtual terminal screen of arbitrary size.
-# You could use this for something else, although I just used it for DiscordHack.
+# You could use this for something else, although I just used it for WandOfDiscord.
 class VScreen(object):
     def __init__(self, size_x, size_y):
         self.size_x = size_x

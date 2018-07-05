@@ -1,11 +1,16 @@
 # WandOfDiscord
 # Created by Tymewalk
 # https://github.com/Tymewalk
-import pexpect, inspect, traceback, discord, asyncio, subprocess, vscreen
+import pexpect, inspect, traceback, discord, asyncio, subprocess, vscreen, os, json, re
 
 client = discord.Client()
 
-playername = "Your_Name_Here"
+# Load the settings - we need this for the token and player name
+f = open("{}/{}".format(os.path.dirname(os.path.realpath(__file__)), "settings.json"))
+settings = json.load(f)
+f.close()
+
+playername = settings["playername"]
 
 @client.event
 async def on_ready():
@@ -242,7 +247,7 @@ async def on_message(message):
 
 
 try:
-    client.run('TOKEN')
+    client.run(settings["token"])
 except KeyboardInterrupt:
     client.logout()
 finally:
