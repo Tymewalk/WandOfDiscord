@@ -20,17 +20,17 @@ async def on_ready():
     print('------')
     await client.change_presence(game=discord.Game(name="Use n!help"))
 
-print("Setting up VScreen... ", end='')
+print("Setting up VScreen... ")
 nethack_screen = vscreen.VScreen(80, 24)
 pointer_x = 0
 pointer_y = 0
 print("VScreen set up successfully.")
 
-print("Spawning NetHack... ", end='')
+print("Spawning NetHack... ")
 nh = pexpect.spawn("nethack", ["-u", playername])
 print("Spawned.")
 
-print("Initializing NetHack... ", end='')
+print("Reading screen... ", end='')
 line = nh.read_nonblocking(size=999999999).decode()
 
 async def parse_nethack_output(output, message=False):
