@@ -147,6 +147,13 @@ async def parse_nethack_output(output, message=False):
 
 #await parse_nethack_output(line)
 
+async def show_current_board(message):
+    global nh, line, client, nethack_screen
+
+    line = nh.read_nonblocking(size=9999).decode()
+    await parse_nethack_output(line)
+    await client.send_message(message.channel, "{} ```{}```".format(message.author.mention, nethack_screen.get_screen()))
+
 @client.event
 async def on_message(message):
     global nh, line, nethack_screen, pointer_x, pointer_y
@@ -157,81 +164,54 @@ async def on_message(message):
         await client.send_message(message.channel, "{} Commands: n!help, n!up, n!down, n!left, n!right, n!n, n!key <letter to send>".format(message.author.mention))
     elif re.search("^!nh", message.content):
         #nh.sendline("")
-        # Send out the game board
-        await client.send_message(message.channel, "{} ```{}```".format(message.author.mention, nethack_screen.get_screen()))
+        await show_current_board(message)
     elif re.search("^n!up", message.content):
         nh.send("k")
         # Send out the game board
-        line = nh.read_nonblocking(size=9999).decode()
-        await parse_nethack_output(line)
-        await client.send_message(message.channel, "{} ```{}```".format(message.author.mention, nethack_screen.get_screen()))
+        await show_current_board(message)
     elif re.search("^n!down", message.content):
         nh.send("j")
         # Send out the game board
-        line = nh.read_nonblocking(size=9999).decode()
-        await parse_nethack_output(line)
-        await client.send_message(message.channel, "{} ```{}```".format(message.author.mention, nethack_screen.get_screen()))
+        await show_current_board(message)
     elif re.search("^n!left", message.content):
         nh.send("h")
         # Send out the game board
-        line = nh.read_nonblocking(size=9999).decode()
-        await parse_nethack_output(line)
-        await client.send_message(message.channel, "{} ```{}```".format(message.author.mention, nethack_screen.get_screen()))
+        await show_current_board(message)
     elif re.search("^n!right", message.content):
         nh.send("l")
         # Send out the game board
-        line = nh.read_nonblocking(size=9999).decode()
-        await parse_nethack_output(line)
-        await client.send_message(message.channel, "{} ```{}```".format(message.author.mention, nethack_screen.get_screen()))
+        await show_current_board(message)
     elif re.search("^n!yes", message.content):
         nh.send("y")
         # Send out the game board
-        line = nh.read_nonblocking(size=9999).decode()
-        await parse_nethack_output(line)
-        await client.send_message(message.channel, "{} ```{}```".format(message.author.mention, nethack_screen.get_screen()))
+        await show_current_board(message)
     elif re.search("^n!no", message.content):
         nh.send("n")
-        # Send out the game board
-        line = nh.read_nonblocking(size=9999).decode()
-        await parse_nethack_output(line)
-        await client.send_message(message.channel, "{} ```{}```".format(message.author.mention, nethack_screen.get_screen()))
+        await show_current_board(message)
     elif re.search("^n!space", message.content):
         nh.send(" ")
-        # Send out the game board
-        line = nh.read_nonblocking(size=9999).decode()
-        await parse_nethack_output(line)
-        await client.send_message(message.channel, "{} ```{}```".format(message.author.mention, nethack_screen.get_screen()))
+        await show_current_board(message)
     elif re.search("^n!return", message.content):
         nh.send("\r")
-        # Send out the game board
-        line = nh.read_nonblocking(size=9999).decode()
-        await parse_nethack_output(line)
-        await client.send_message(message.channel, "{} ```{}```".format(message.author.mention, nethack_screen.get_screen()))
+        await show_current_board(message)
     elif re.search("^n!y", message.content):
         nh.send("y")
-        # Send out the game board
-        line = nh.read_nonblocking(size=9999).decode()
-        await parse_nethack_output(line)
-        await client.send_message(message.channel, "{} ```{}```".format(message.author.mention, nethack_screen.get_screen()))
+        await show_current_board(message)
     elif re.search("^n!n", message.content):
         nh.send("n")
-        # Send out the game board
-        line = nh.read_nonblocking(size=9999).decode()
-        await parse_nethack_output(line)
-        await client.send_message(message.channel, "{} ```{}```".format(message.author.mention, nethack_screen.get_screen()))
+        await show_current_board(message)
     elif re.search("^n!save", message.content):
         nh.send("S")
-        # Send out the game board
-        line = nh.read_nonblocking(size=9999).decode()
-        await parse_nethack_output(line)
-        await client.send_message(message.channel, "{} ```{}```".format(message.author.mention, nethack_screen.get_screen()))
+        await show_current_board(message)
     elif re.search("^n!key ", message.content):
         # Send arbitrary keys. Useful for many things
-        nh.send(message.content[6])
-        # Send out the game board
-        line = nh.read_nonblocking(size=9999).decode()
-        await parse_nethack_output(line)
-        await client.send_message(message.channel, "{} ```{}```".format(message.author.mention, nethack_screen.get_screen()))
+        for k in message.content[6:]:
+            nh.send(k)
+        await show_current_board(message)
+    elif re.search("^n!control ", message.content):
+        # Send a control key
+        nh.sendcontrol(message.content[10])
+        await show_current_board(message)
     elif re.search("^n!debug", message.content):
         print("Caught a debug command!")
         try:
