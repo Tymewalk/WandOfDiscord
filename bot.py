@@ -161,9 +161,8 @@ async def on_message(message):
         pass
 
     if re.search("^n!help", message.content):
-        await client.send_message(message.channel, "{} Commands: n!help, n!up, n!down, n!left, n!right, n!n, n!key <letter to send>".format(message.author.mention))
-    elif re.search("^!nh", message.content):
-        #nh.sendline("")
+        await client.send_message(message.channel, "{} Commands: n!board, n!help, n!up, n!down, n!left, n!right, n!n, n!key <letter to send>, n!control <control key to send>".format(message.author.mention))
+    elif re.search("^n!board", message.content):
         await show_current_board(message)
     elif re.search("^n!up", message.content):
         if len(message.content) > 4:
