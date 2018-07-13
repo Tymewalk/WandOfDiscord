@@ -166,19 +166,59 @@ async def on_message(message):
         #nh.sendline("")
         await show_current_board(message)
     elif re.search("^n!up", message.content):
-        nh.send("k")
+        if len(message.content) > 4:
+            try:
+                # Try getting the number of steps by stripping whitespace
+                steps = int(message.content[4:].rstrip().lstrip())
+            except:
+                # Clearly it didn't work
+                await client.send_message(message.channel, "{} You need to provide an integer as the number of times!".format(message.author.mention))
+                steps = 1
+            finally:
+                for i in range(steps):
+                    nh.send("k")
         # Send out the game board
         await show_current_board(message)
     elif re.search("^n!down", message.content):
-        nh.send("j")
+        if len(message.content) > 6:
+            try:
+                # Try getting the number of steps by stripping whitespace
+                steps = int(message.content[6:].rstrip().lstrip())
+            except:
+                # Clearly it didn't work
+                await client.send_message(message.channel, "{} You need to provide an integer as the number of times!".format(message.author.mention))
+                steps = 1
+            finally:
+                for i in range(steps):
+                    nh.send("j")
         # Send out the game board
         await show_current_board(message)
     elif re.search("^n!left", message.content):
-        nh.send("h")
+        if len(message.content) > 6:
+            try:
+                # Try getting the number of steps by stripping whitespace
+                steps = int(message.content[6:].rstrip().lstrip())
+            except:
+                # Clearly it didn't work
+                await client.send_message(message.channel, "{} You need to provide an integer as the number of times!".format(message.author.mention))
+                steps = 1
+            finally:
+                for i in range(steps):
+                    nh.send("h")
         # Send out the game board
         await show_current_board(message)
     elif re.search("^n!right", message.content):
-        nh.send("l")
+        if len(message.content) > 7:
+            try:
+                # Try getting the number of steps by stripping whitespace
+                steps = int(message.content[7:].rstrip().lstrip())
+            except:
+                # Clearly it didn't work
+                await client.send_message(message.channel, "{} You need to provide an integer as the number of times!".format(message.author.mention))
+                steps = 1
+            finally:
+                for i in range(steps):
+                    nh.send("l")
         # Send out the game board
         await show_current_board(message)
     elif re.search("^n!yes", message.content):
