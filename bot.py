@@ -40,6 +40,7 @@ async def parse_nethack_output(output, message=False):
     # [?1049h enables the alternate screen buffer. We don't care about that at all because Discord's surely not gonna use it.
     # Newlines are handled via \r.
     stripped = str(re.sub("(\[[0-9](|[0-9])m|\[\?1049h|\n)", "", output))
+    # This counter tracks what position in the instruction string we're in
     counter = 0
     # skip_to allows us to skip instructions we've already processed.
     skip_to = 0
@@ -50,10 +51,13 @@ async def parse_nethack_output(output, message=False):
         if counter >= skip_to:
             # These instructions are all ANSI escape codes
             # https://en.wikipedia.org/wiki/ANSI_escape_code#Escape_sequences
+            # http://ascii-table.com/ansi-escape-sequences-vt-100.php
             try:
                 # Normally I would strip the \x1b here, but unfortunately for us, Nethack uses [ as armor.
-                # So to avoid having any conflict, we check for it.
+                # So to avoid having any conflict, we check for it, as armor doesn't have \x1b before it.
                 if i == "" and stripped[counter + 1] == "[":
+                    # Counter position will be \x1b. Counter + 1 is [.
+                    # Everything after is the commands themselves.
                     if stripped[counter + 2] == "H":
                         # [H alone means go to 0,0
                         # You'll notice it being printed when we use the status bar
@@ -77,23 +81,23 @@ async def parse_nethack_output(output, message=False):
                         pointer_y += 1
                         skip_to = counter + 3
                     elif stripped[counter + 2] == "K":
-                        # [K means clear the rest of this line
+                        # [K means clear everything to the right of the cursor
                         # It's used in the upper status bar
                         nethack_screen.blit(" "*(80 - pointer_x), pointer_x, pointer_y)
                         skip_to = counter + 3
                     elif stripped[counter + 3] == "K":
                         # However, other [nK for values of n can change what is cleared
                         if stripped[counter + 2] == "1":
-                            # [1K means clear the beginning of this line
+                            # [1K means clear everything to the left of the cursor
                             nethack_screen.blit(" "*pointer_x, pointer_x, pointer_y)
                             skip_to = counter + 4
                         elif stripped[counter + 2] == "2":
-                            # [2K means clear all of this line.
+                            # [2K means clear the whole line
                             nethack_screen.blit(" "*80, pointer_y)
                             skip_to = counter + 4
                     elif stripped[counter + 3] == ";":
                         # [XX;YYH tells the pointer to go to XX, YY.
-                        # The different checks just figure how long those numbers are.
+                        # The different checks here just figure how long those numbers are.
                         if not counter + 6 > len(stripped) - 1:
                             if stripped[counter + 6] == "H":
                                 pointer_y = int(str(stripped[counter + 2])) - 1
@@ -119,10 +123,11 @@ async def parse_nethack_output(output, message=False):
                                 pointer_x = int(str(stripped[counter + 5])) - 1
                                 skip_to = counter + 7
                     elif stripped[counter + 3] == "J":
-                        # [nJ clears part of the screen. n changes how it works.
+                        # [J is similar to [K, except it works vertically.
                         if stripped[counter + 2] == "2":
                             # [2J clears the whole screen.
-                            # This is the only one I've seen NetHack use
+                            # This is the only one I've seen NetHack use, so
+                            # no need to implement the vertical versions
                             nethack_screen.clear()
                         skip_to = counter + 4
                     else:
@@ -143,7 +148,9 @@ async def parse_nethack_output(output, message=False):
                 print("Hit end of line unexpectedly - ignoring commands")
             finally:
                 pass
+        print(stripped[counter], end=' ')
         counter += 1
+    print()
 
 #await parse_nethack_output(line)
 
@@ -161,7 +168,7 @@ async def on_message(message):
         pass
 
     if re.search("^n!help", message.content):
-        await client.send_message(message.channel, "{} Commands: n!board, n!help, n!up, n!down, n!left, n!right, n!n, n!key <letter to send>, n!control <control key to send>".format(message.author.mention))
+        await client.send_message(message.channel, "{} Commands: n!board, n!help, n!up, n!down, n!left, n!right, n!y, n!n, n!key <letter to send>, n!control <control key to send>".format(message.author.mention))
     elif re.search("^n!board", message.content):
         await show_current_board(message)
     elif re.search("^n!up", message.content):

@@ -6,7 +6,7 @@ A bot that lets you play NetHack, the classic roguelike, over Discord! Set up th
 
 Run the `config.py` script and add your bot's token and the name of your player there.
 
-You will also need Python 3 with the modules pexpect, inspect, traceback, discord.py, and asyncio, and of course, you will need NetHack.
+You will also need Python 3.5+ with the modules pexpect, inspect, traceback, discord.py, and asyncio, and of course, you will need NetHack.
 
 ## What OSes does this run under?
 
