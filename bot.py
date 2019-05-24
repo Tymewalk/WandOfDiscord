@@ -85,7 +85,7 @@ async def parse_nethack_output(output, message=False):
                         # It's used in the upper status bar
                         nethack_screen.blit(" "*(80 - pointer_x), pointer_x, pointer_y)
                         skip_to = counter + 3
-                    elif stripped[counter + 3] == "K":
+                    elif stripped[counter + 2] in list("0123456789") and stripped[counter + 3] == "K":
                         # However, other [nK for values of n can change what is cleared
                         if stripped[counter + 2] == "1":
                             # [1K means clear everything to the left of the cursor
@@ -95,34 +95,40 @@ async def parse_nethack_output(output, message=False):
                             # [2K means clear the whole line
                             nethack_screen.blit(" "*80, pointer_y)
                             skip_to = counter + 4
-                    elif stripped[counter + 3] == ";":
+                    # X coordinate is one digit long
+                    elif stripped[counter + 2] in list("0123456789") and stripped[counter + 3] == ";":
                         # [XX;YYH tells the pointer to go to XX, YY.
                         # The different checks here just figure how long those numbers are.
                         if not counter + 6 > len(stripped) - 1:
-                            if stripped[counter + 6] == "H":
+                            # Y coordinate is two digits long
+                            if stripped[counter + 4] in list("0123456789") and stripped[counter + 5] in list("0123456789") and stripped[counter + 6] == "H":
                                 pointer_y = int(str(stripped[counter + 2])) - 1
                                 pointer_x = int(str(stripped[counter + 4]) + str(stripped[counter + 5])) - 1
                                 skip_to = counter + 7
 
                         if not counter + 5 > len(stripped) - 1:
-                            if stripped[counter + 5] == "H":
+                            # Y coordinate is one digit long
+                            if stripped[counter + 4] in list("0123456789") and stripped[counter + 5] == "H":
                                 pointer_y = int(str(stripped[counter + 2])) - 1
                                 pointer_x = int(str(stripped[counter + 4])) - 1
                                 skip_to = counter + 6
-                    elif stripped[counter + 4] == ";":
+                    # X coordinate is two digits long
+                    elif stripped[counter + 2] in list("0123456789") and stripped[counter + 3] in list("0123456789") and stripped[counter + 4] == ";":
                         # We have to check if we're not going past the end of the string. Otherwise, it's gonna skip the
                         # instruction and blit it to the screen instead.
                         if not counter + 7 > len(stripped) - 1:
-                            if stripped[counter + 7] == "H":
+                            # Y coordinate is two digits long
+                            if stripped[counter + 5] in list("0123456789") and stripped[counter + 6] in list("0123456789") and stripped[counter + 7] == "H":
                                 pointer_y = int(str(stripped[counter + 2]) + str(stripped[counter + 3])) - 1
                                 pointer_x = int(str(stripped[counter + 5]) + str(stripped[counter + 6])) - 1
                                 skip_to = counter + 8
                         if not counter + 6 > len(stripped) - 1:
-                            if stripped[counter + 6] == "H":
+                            # Y coordinate is one digit long
+                            if stripped[counter + 5] in list("0123456789") and stripped[counter + 6] == "H":
                                 pointer_y = int(str(stripped[counter + 2]) + str(stripped[counter + 3])) - 1
                                 pointer_x = int(str(stripped[counter + 5])) - 1
                                 skip_to = counter + 7
-                    elif stripped[counter + 3] == "J":
+                    elif stripped[counter + 2] in list("0123456789") and stripped[counter + 3] == "J":
                         # [J is similar to [K, except it works vertically.
                         if stripped[counter + 2] == "2":
                             # [2J clears the whole screen.
@@ -138,6 +144,7 @@ async def parse_nethack_output(output, message=False):
                 elif i == chr(13):
                     # 0x0d, or \r, is a carriage return
                     pointer_y = pointer_y + 1
+                    pointer_x = 0
                 elif i == "":
                     # 0x08, or \b, is a backspace
                     pointer_x = pointer_x - 1
