@@ -152,7 +152,7 @@ async def parse_nethack_output(output, message=False):
                     nethack_screen.blit(i, pointer_x, pointer_y)
                     pointer_x = pointer_x + 1
             except IndexError:
-                print("Hit end of line unexpectedly - ignoring commands")
+                print("Hit end of line unexpectedly - ignoring commands. Counter was at {}, set to skip to {}, while the length of the string was {}".format(counter, skip_to, len(stripped)))
             finally:
                 pass
         print(stripped[counter], end=' ')
